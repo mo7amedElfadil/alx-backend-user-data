@@ -10,7 +10,7 @@
 """
 import logging
 import mysql.connector
-from os import getenv
+from os import environ
 import re
 from typing import List
 
@@ -82,14 +82,14 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     """ Returns a connector to the database
     """
     return mysql.connector.connect(
-        user=getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
-        password=getenv('PERSONAL_DATA_DB_PASSWORD', ''),
-        host=getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
-        database=getenv('PERSONAL_DATA_DB_NAME')
+        user=environ.get('PERSONAL_DATA_DB_USERNAME', 'root'),
+        password=environ.get('PERSONAL_DATA_DB_PASSWORD', ''),
+        host=environ.get('PERSONAL_DATA_DB_HOST', 'localhost'),
+        database=environ.get('PERSONAL_DATA_DB_NAME')
     )
 
 
-def main():
+def main() -> None:
     """ Main function
         Connects to the database and retrieves all rows from the users table
         Logs each row in the users table in a specific format
