@@ -11,10 +11,8 @@
 import logging
 from os import getenv
 from mysql.connector import connect
-from mysql.connector.pooling import PooledMySQLConnection
-from mysql.connector.abstracts import MySQLConnectionAbstract
 import re
-from typing import List, Union
+from typing import List, Any
 
 
 PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'ip')
@@ -64,7 +62,7 @@ def get_logger() -> logging.Logger:
     return logger
 
 
-def get_db() -> Union[PooledMySQLConnection, MySQLConnectionAbstract]:
+def get_db() -> Any:
     """ Returns a connector to the database
     """
     return connect(
