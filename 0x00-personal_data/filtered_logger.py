@@ -10,12 +10,12 @@
 """
 import logging
 from os import getenv
-from mysql.connector import connect
+from mysql.connector import connect, connection
 import re
 from typing import List, Any
 
 
-PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'ip')
+PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
 
 
 def filter_datum(fields: List[str], redaction: str,
@@ -57,12 +57,13 @@ def get_logger() -> logging.Logger:
     logger.setLevel(logging.INFO)
     logger.propagate = False
     stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
     stream_handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
     logger.addHandler(stream_handler)
     return logger
 
 
-def get_db() -> Any:
+def get_db() -> connection.MySQLConnection:
     """ Returns a connector to the database
     """
     return connect(
