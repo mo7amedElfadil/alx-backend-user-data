@@ -9,13 +9,13 @@
                           f'{field}={redaction}', message)
 """
 import logging
-from os import getenv
+import os
 from mysql.connector import connect, connection
 import re
-from typing import List, Any
+from typing import List
 
 
-PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
+PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'ip')
 
 
 def filter_datum(fields: List[str], redaction: str,
@@ -67,8 +67,8 @@ def get_db() -> connection.MySQLConnection:
     """ Returns a connector to the database
     """
     return connect(
-        user=getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
-        password=getenv('PERSONAL_DATA_DB_PASSWORD', ''),
-        host=getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
-        database=getenv('PERSONAL_DATA_DB_NAME')
+        user=os.getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
+        password=os.getenv('PERSONAL_DATA_DB_PASSWORD', ''),
+        host=os.getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
+        database=os.getenv('PERSONAL_DATA_DB_NAME')
     )
