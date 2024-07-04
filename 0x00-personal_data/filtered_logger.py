@@ -9,7 +9,7 @@
                           f'{field}={redaction}', message)
 """
 import logging
-from mysql.connector import connect, connection
+import mysql.connector
 from os import getenv
 import re
 from typing import List
@@ -78,10 +78,10 @@ def get_logger() -> logging.Logger:
     return logger
 
 
-def get_db() -> connection.MySQLConnection:
+def get_db() -> mysql.connector.connection.MySQLConnection:
     """ Returns a connector to the database
     """
-    return connect(
+    return mysql.connector.connect(
         user=getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
         password=getenv('PERSONAL_DATA_DB_PASSWORD', ''),
         host=getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
