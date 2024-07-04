@@ -9,8 +9,8 @@
                           f'{field}={redaction}', message)
 """
 import logging
-import os
-import mysql.connector
+from mysql.connector import connect, connection
+from os import getenv
 import re
 from typing import List
 
@@ -18,9 +18,17 @@ from typing import List
 PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
 
 
-def filter_datum(fields: List[str], redaction: str,
-                 message: str, separator: str) -> str:
+def filter_datum(
+        fields: List[str], redaction: str, message: str, separator: str
+        ) -> str:
     """ Returns the log message obfuscated
+        Args:
+            fields (List[str]): representing all fields to obfuscate
+            redaction (str): representing the obfuscated string
+            message (str): representing the log line
+            separator (str): representing the separator for the fields
+        Returns:
+            str: the log message obfuscated
     """
     for field in fields:
         message = re.sub(rf'{field}=.+?{separator}',
@@ -37,11 +45,17 @@ class RedactingFormatter(logging.Formatter):
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]):
+        """ Constructor for obfuscating PII in log messages
+        """
         super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
 
     def format(self, record: logging.LogRecord) -> str:
         """ format method that filters values in incoming log records
+            Args:
+                record (logging.LogRecord): the record to filter
+            Returns:
+                str: the log message obfuscated
         """
         return filter_datum(self.fields, self.REDACTION,
                             super().format(record), self.SEPARATOR)
@@ -52,23 +66,24 @@ def get_logger() -> logging.Logger:
         logger is named user_data and has a log level of INFO
         It should not propagate messages to other loggers
         It has a StreamHandler with RedactingFormatter as formatter
+        Returns:
+            logging.Logger: the user_data logger
     """
     logger = logging.getLogger('user_data')
     logger.setLevel(logging.INFO)
     logger.propagate = False
     stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.INFO)
     stream_handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
     logger.addHandler(stream_handler)
     return logger
 
 
-def get_db() -> mysql.connector.connection.MySQLConnection:
+def get_db() -> connection.MySQLConnection:
     """ Returns a connector to the database
     """
-    return mysql.connector.connect(
-        user=os.getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
-        password=os.getenv('PERSONAL_DATA_DB_PASSWORD', ''),
-        host=os.getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
-        database=os.getenv('PERSONAL_DATA_DB_NAME')
+    return connect(
+        user=getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
+        password=getenv('PERSONAL_DATA_DB_PASSWORD', ''),
+        host=getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
+        database=getenv('PERSONAL_DATA_DB_NAME')
     )
