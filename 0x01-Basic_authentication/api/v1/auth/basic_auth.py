@@ -81,8 +81,6 @@ class BasicAuth(Auth):
                 or any([not isinstance(i, str)
                         for i in {user_email, user_pwd}]):
             return None
-        if not User.count():
-            return None
         user = User.search({'email': user_email})
         if not user:
             return None
