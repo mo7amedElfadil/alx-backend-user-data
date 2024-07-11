@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """ Session Authentication module """
-from base64 import b64decode
 from api.v1.auth.auth import Auth
 from models.user import User
-from typing import TypeVar
 from uuid import uuid4
 
 
@@ -35,3 +33,15 @@ class SessionAuth(Auth):
                 self.user_id_for_session_id(
                     self.session_cookie(
                         request)))
+
+    def destroy_session(self, request=None):
+        """ Deletes the user session / logout """
+        if not request:
+            return False
+        session_id = self.session_cookie(request)
+        if not session_id:
+            return False
+        if not self.user_id_for_session_id(session_id):
+            return False
+        del self.user_id_by_session_id[session_id]
+        return True
