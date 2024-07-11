@@ -23,6 +23,7 @@ class SessionDBAuth(SessionExpAuth):
         """
         if session_id is None:
             return None
+        UserSession.load_from_file()
         user_session = UserSession.search({'session_id': session_id})
         if not user_session:
             return None

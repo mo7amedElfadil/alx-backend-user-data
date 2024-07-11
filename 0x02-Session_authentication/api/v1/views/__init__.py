@@ -12,4 +12,3 @@ from models.user_session import UserSession
 
 User.load_from_file()
 UserSession.load_from_file()
-
