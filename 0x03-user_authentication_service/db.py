@@ -8,6 +8,7 @@ from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from user import Base, User
+from typing import Dict
 
 
 class DB:
@@ -48,7 +49,7 @@ class DB:
 
         return user
 
-    def find_user_by(self, **kwargs) -> User:
+    def find_user_by(self, **kwargs: Dict[str, str]) -> User:
         """ Find user by key word arguments
             NoResultFound and InvalidRequestError are raised when
             - no results are found, or
@@ -69,7 +70,7 @@ class DB:
             .filter_by(**kwargs)\
             .one()
 
-    def update_user(self, user_id: int, **kwargs) -> None:
+    def update_user(self, user_id: int, **kwargs: Dict[str, str]) -> None:
         """ Update user
             Args:
                 user_id (int): user id
