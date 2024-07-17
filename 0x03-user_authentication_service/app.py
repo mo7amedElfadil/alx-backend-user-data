@@ -124,8 +124,6 @@ def update_password() -> str:
     email = request.form.get('email')
     reset_token = request.form.get('reset_token')
     new_password = request.form.get('new_password')
-    if not all([email, reset_token, new_password]):
-        return jsonify({'message': 'Bad request'}), 400
     try:
         AUTH.update_password(reset_token, new_password)
         return jsonify({'email': email, 'message': 'Password updated'}), 200
