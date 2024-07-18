@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """ DB module
 """
-import logging
 from typing import Dict
 from sqlalchemy import create_engine
 from sqlalchemy.orm.exc import NoResultFound
@@ -9,8 +8,6 @@ from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from user import Base, User
-
-logging.disable(logging.WARNING)
 
 
 class DB:
