@@ -45,13 +45,16 @@ class DB:
         """
 
         user = User(email=email, hashed_password=hashed_password)
-
-        self._session.add(user)
-        self._session.commit()
+        try:
+            self._session.add(user)
+            self._session.commit()
+        except InvalidRequestError:
+            self._session.rollback()
+            raise
 
         return user
 
-    def find_user_by(self, **kwargs: Dict) -> User:
+    def find_user_by(self, **kwargs: Dict[str, str]) -> User:
         """ Find user by key word arguments
             NoResultFound and InvalidRequestError are raised when
             - no results are found, or
@@ -72,7 +75,7 @@ class DB:
             .filter_by(**kwargs)\
             .one()
 
-    def update_user(self, user_id: int, **kwargs: Dict) -> None:
+    def update_user(self, user_id: int, **kwargs: Dict[str, str]) -> None:
         """ Update user
             Args:
                 user_id (int): user id
@@ -83,9 +86,6 @@ class DB:
             Returns:
                 None
         """
-        if not kwargs or not user_id:
-            return
-
         try:
             user = self.find_user_by(id=user_id)
         except NoResultFound:
@@ -96,5 +96,7 @@ class DB:
                 raise ValueError
 
             setattr(user, key, value)
-
-        self._session.commit()
+        try:
+            self._session.commit()
+        except InvalidRequestError:
+            raise ValueError
