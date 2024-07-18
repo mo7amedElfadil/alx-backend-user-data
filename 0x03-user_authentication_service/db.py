@@ -47,7 +47,7 @@ class DB:
 
         return user
 
-    def find_user_by(self, **kwargs: Dict) -> User:
+    def find_user_by(self, **kwargs) -> User:
         """ Find user by key word arguments
             NoResultFound and InvalidRequestError are raised when
             - no results are found, or
@@ -63,17 +63,12 @@ class DB:
             Returns:
                 User object
         """
-        try:
-            return self._session\
-                .query(User)\
-                .filter_by(**kwargs)\
-                .one()
-        except NoResultFound:
-            raise
-        except InvalidRequestError:
-            raise
+        return self._session\
+            .query(User)\
+            .filter_by(**kwargs)\
+            .one()
 
-    def update_user(self, user_id: int, **kwargs: Dict) -> None:
+    def update_user(self, user_id: int, **kwargs: Dict[str, str]) -> None:
         """ Update user
             Args:
                 user_id (int): user id
@@ -84,17 +79,11 @@ class DB:
             Returns:
                 None
         """
-        try:
-            user = self.find_user_by(id=user_id)
-        except (NoResultFound, InvalidRequestError):
-            raise ValueError
+        user = self.find_user_by(id=user_id)
 
         for key, value in kwargs.items():
             if not hasattr(user, key):
                 raise ValueError
-
             setattr(user, key, value)
-        try:
-            self._session.commit()
-        except InvalidRequestError:
-            raise ValueError
+
+        self._session.commit()
