@@ -80,6 +80,8 @@ class DB:
                 None
         """
         user = self.find_user_by(id=user_id)
+        if not user:
+            return
 
         for key, value in kwargs.items():
             if not hasattr(User, key):
