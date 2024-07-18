@@ -68,7 +68,7 @@ class DB:
             .filter_by(**kwargs)\
             .one()
 
-    def update_user(self, user_id: int, **kwargs: Dict[str, str]) -> None:
+    def update_user(self, user_id: int, **kwargs: Dict[str, str]):
         """ Update user
             Args:
                 user_id (int): user id
