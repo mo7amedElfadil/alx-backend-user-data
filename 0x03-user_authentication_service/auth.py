@@ -51,10 +51,10 @@ class Auth:
         """ Create a new session """
         try:
             user = self._db.find_user_by(email=email)
+            session_id = _generate_uuid()
+            self._db.update_user(user.id, session_id=session_id)
         except NoResultFound:
             return None
-        session_id = _generate_uuid()
-        self._db.update_user(user.id, session_id=session_id)
         return session_id
 
     def get_user_from_session_id(self, session_id: str) -> User:
@@ -68,10 +68,7 @@ class Auth:
 
     def destroy_session(self, user_id: int) -> None:
         """ Destroy a session """
-        try:
-            self._db.update_user(user_id, session_id=None)
-        except ValueError:
-            return None
+        self._db.update_user(user_id, session_id=None)
 
     def get_reset_password_token(self, email: str) -> str:
         """ Generate a reset password token """
@@ -84,6 +81,8 @@ class Auth:
 
     def update_password(self, reset_token: str, password: str) -> None:
         """ Reset user's password """
+        if not reset_token or not password:
+            raise ValueError
         try:
             user = self._db.find_user_by(reset_token=reset_token)
         except NoResultFound:

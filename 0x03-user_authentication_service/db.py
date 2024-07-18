@@ -11,10 +11,11 @@ from user import Base, User
 
 
 class DB:
-    """DB class
+    """ DB class
     """
+
     def __init__(self) -> None:
-        """Initialize a new DB instance
+        """ Initialize a new DB instance
         """
         self._engine = create_engine("sqlite:///a.db", echo=False)
         Base.metadata.drop_all(self._engine)
@@ -23,7 +24,7 @@ class DB:
 
     @property
     def _session(self) -> Session:
-        """Memoized session object
+        """ Memoized session object
         """
         if self.__session is None:
             DBSession = sessionmaker(bind=self._engine)
@@ -40,13 +41,9 @@ class DB:
                 User object
         """
 
-        try:
-            user = User(email=email, hashed_password=hashed_password)
-            self._session.add(user)
-            self._session.commit()
-        except InvalidRequestError:
-            self._session.rollback()
-            return None
+        user = User(email=email, hashed_password=hashed_password)
+        self._session.add(user)
+        self._session.commit()
 
         return user
 
@@ -66,10 +63,15 @@ class DB:
             Returns:
                 User object
         """
-        return self._session\
-            .query(User)\
-            .filter_by(**kwargs)\
-            .one()
+        try:
+            return self._session\
+                .query(User)\
+                .filter_by(**kwargs)\
+                .one()
+        except NoResultFound:
+            raise
+        except InvalidRequestError:
+            raise
 
     def update_user(self, user_id: int, **kwargs: Dict) -> None:
         """ Update user
@@ -84,7 +86,7 @@ class DB:
         """
         try:
             user = self.find_user_by(id=user_id)
-        except NoResultFound:
+        except (NoResultFound, InvalidRequestError):
             raise ValueError
 
         for key, value in kwargs.items():
