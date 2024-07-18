@@ -4,7 +4,6 @@
 import logging
 from typing import Dict
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm import sessionmaker
@@ -34,7 +33,7 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password: bytes) -> User:
+    def add_user(self, email: str, hashed_password: str) -> User:
         """ Create user and add it to session
 
             Args:
@@ -44,13 +43,13 @@ class DB:
                 User object
         """
 
-        user = User(email=email, hashed_password=hashed_password)
         try:
+            user = User(email=email, hashed_password=hashed_password)
             self._session.add(user)
             self._session.commit()
         except InvalidRequestError:
             self._session.rollback()
-            raise
+            return None
 
         return user
 
