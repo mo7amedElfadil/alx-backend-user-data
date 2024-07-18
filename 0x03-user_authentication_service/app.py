@@ -15,14 +15,6 @@ app.url_map.strict_slashes = False
 AUTH = Auth()
 
 
-def verify_data(data):
-    """ Verify the data sent by the user. """
-    required_fields = ['email', 'password']
-    if not all([field in data for field in required_fields]):
-        return None
-    return data['email'], data['password']
-
-
 @app.route('/', methods=['GET'])
 def greet():
     """ Greeting message. """
