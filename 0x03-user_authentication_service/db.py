@@ -32,7 +32,7 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password: str) -> User:
+    def add_user(self, email: str, hashed_password: bytes) -> User:
         """ Create user and add it to session
 
             Args:
@@ -49,7 +49,7 @@ class DB:
 
         return user
 
-    def find_user_by(self, **kwargs: Dict[str, str]) -> User:
+    def find_user_by(self, **kwargs: Dict) -> User:
         """ Find user by key word arguments
             NoResultFound and InvalidRequestError are raised when
             - no results are found, or
@@ -70,7 +70,7 @@ class DB:
             .filter_by(**kwargs)\
             .one()
 
-    def update_user(self, user_id: int, **kwargs: Dict[str, str]) -> None:
+    def update_user(self, user_id: int, **kwargs: Dict) -> None:
         """ Update user
             Args:
                 user_id (int): user id
