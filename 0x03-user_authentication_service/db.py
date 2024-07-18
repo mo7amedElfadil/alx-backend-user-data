@@ -81,6 +81,8 @@ class DB:
             Returns:
                 None
         """
+        if not kwargs or not user_id:
+            return
 
         try:
             user = self.find_user_by(id=user_id)
