@@ -1,15 +1,7 @@
 #!/usr/bin/env python3
 """ Flask app to serve the model as an API. """
-from flask import (
-        Flask,
-        request,
-        jsonify,
-        abort,
-        redirect,
-        make_response,
-        Response)
+from flask import Flask, request, jsonify, abort, redirect
 from auth import Auth
-from uuid import UUID
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -23,7 +15,7 @@ def greet():
 
 
 @app.route('/users', methods=['POST'])
-def users() -> Response:
+def users():
     """ POST /users route to register a user.
         - email: user email
         - password: user password
@@ -42,7 +34,7 @@ def users() -> Response:
 
 
 @app.route('/sessions', methods=['POST'])
-def login() -> Response:
+def login():
     """ POST /sessions route to login a user.
         - email: user email
         - password: user password
@@ -55,31 +47,39 @@ def login() -> Response:
     if not AUTH.valid_login(email, password):
         abort(401)
     session_id = AUTH.create_session(email)
-    response = make_response(jsonify({'email': email,
-                                      'message': 'logged in'}), 200)
+    response = jsonify({'email': email,
+                                      'message': 'logged in'})
     response.set_cookie('session_id', session_id)
     return response
 
 
 @app.route('/sessions', methods=['DELETE'])
-def logout() -> str:
+def logout():
     """ DELETE /sessions route to logout a user.
         - session_id: user session id
         Returns:
             - 403 if the session id is invalid
             - 302 and redirect to the main page if the session was deleted
     """
-    session_id = request.cookies.get('session_id')
+    session_id = request.cookies.get('session_id', None)
+    if not session_id:
+        abort(403)
+
     user = AUTH.get_user_from_session_id(session_id)
     if not user:
         abort(403)
+
     AUTH.destroy_session(user.id)
     return redirect('/')
 
 
 @app.route('/profile', methods=['GET'])
-def profile() -> str:
-    session_id = request.cookies.get('session_id')
+def profile():
+    session_id = request.cookies.get('session_id', None)
+
+    if not session_id:
+        abort(403)
+
     user = AUTH.get_user_from_session_id(session_id)
 
     if not user:
@@ -89,7 +89,7 @@ def profile() -> str:
 
 
 @app.route('/reset_password', methods=['POST'])
-def get_reset_password_token() -> str:
+def get_reset_password_token():
     """ POST /reset_password route to generate a reset password token.
         - email: user email
         Returns:
@@ -108,7 +108,7 @@ def get_reset_password_token() -> str:
 
 
 @app.route('/reset_password', methods=['PUT'])
-def update_password() -> str:
+def update_password():
     """ PUT /reset_password route to update the user password.
         - email: user email
         - reset_token: user reset token
@@ -122,7 +122,6 @@ def update_password() -> str:
     reset_token = request.form.get('reset_token')
     new_password = request.form.get('new_password')
     try:
-        UUID(reset_token)
         AUTH.update_password(reset_token, new_password)
     except ValueError:
         abort(403)
