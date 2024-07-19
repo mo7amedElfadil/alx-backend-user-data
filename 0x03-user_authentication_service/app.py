@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """ Flask app to serve the model as an API. """
-from flask import Flask, request, jsonify, abort, redirect
 from auth import Auth
+from flask import Flask, request, jsonify, abort, redirect
 
+AUTH = Auth()
 app = Flask(__name__)
 app.url_map.strict_slashes = False
-AUTH = Auth()
 
 
 @app.route('/', methods=['GET'])
@@ -25,12 +25,14 @@ def users():
             - 400 if the user already exists
     """
     email, password = request.form.get('email'), request.form.get('password')
+    if not email or not password:
+        abort(400)
     try:
         user = AUTH.register_user(email, password)
         return jsonify({'email': user.email,
                         'message': 'user created'}), 200
     except ValueError:
-        return jsonify({'message': f"email already registered"}), 400
+        return jsonify({'message': "email already registered"}), 400
 
 
 @app.route('/sessions', methods=['POST'])
