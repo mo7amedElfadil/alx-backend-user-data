@@ -85,6 +85,13 @@ def logout():
 
 @app.route("/profile", methods=["GET"])
 def profile():
+    """ GET /profile route to obtain user email.
+        - session_id: user session id
+        Returns:
+            - 403 if the session id is invalid
+            - 200 and the user email if the session is valid
+    """
+
     session_id = request.cookies.get("session_id", None)
 
     if not session_id:
