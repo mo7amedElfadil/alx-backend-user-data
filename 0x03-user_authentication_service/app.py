@@ -9,6 +9,7 @@ from flask import (
         make_response,
         Response)
 from auth import Auth
+from uuid import UUID
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -121,6 +122,7 @@ def update_password() -> str:
     reset_token = request.form.get('reset_token')
     new_password = request.form.get('new_password')
     try:
+        UUID(reset_token)
         AUTH.update_password(reset_token, new_password)
     except ValueError:
         abort(403)
