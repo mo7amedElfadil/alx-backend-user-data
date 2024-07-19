@@ -10,12 +10,12 @@ from db import DB
 from user import User
 
 
-def _hash_password(password: str) -> bytes:
+def _hash_password(password: str) -> str:
     """ Returns a salted, hashed password """
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
 
-def _valid_password(password: str, hashed_password: bytes) -> bool:
+def _valid_password(password: str, hashed_password: str) -> bool:
     """ Check if password is valid """
     return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
 
