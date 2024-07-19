@@ -2,6 +2,7 @@
 """ Flask app to serve the model as an API. """
 from auth import Auth
 from flask import Flask, request, jsonify, abort, redirect
+import uuid
 
 AUTH = Auth()
 app = Flask(__name__)
@@ -124,6 +125,7 @@ def update_password():
     reset_token = request.form.get("reset_token")
     new_password = request.form.get("new_password")
     try:
+        uuid.UUID(reset_token)
         AUTH.update_password(reset_token, new_password)
     except ValueError:
         abort(403)
