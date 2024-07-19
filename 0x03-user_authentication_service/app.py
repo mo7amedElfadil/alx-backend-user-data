@@ -116,7 +116,6 @@ def update_password():
         - reset_token: user reset token
         - new_password: user new password
         Returns:
-            - 400 if email, reset_token or new_password is missing
             - 403 if the email does not exist or the reset token is invalid
             - 200 if the password was updated
     """
@@ -127,7 +126,7 @@ def update_password():
         AUTH.update_password(reset_token, new_password)
     except ValueError:
         abort(403)
-    return jsonify({"email": email, "message": "Password updated"})
+    return jsonify({"email": email, "message": "Password updated"}), 200
 
 
 if __name__ == "__main__":
