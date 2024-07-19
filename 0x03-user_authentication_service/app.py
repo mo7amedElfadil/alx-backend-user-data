@@ -47,7 +47,8 @@ def login():
             - 200 and the session id if the user was logged in
             - 401 if the user does not exist or the password is invalid
     """
-    email, password = request.form.get("email"), request.form.get("password")
+    email = request.form.get("email")
+    password = request.form.get("password")
     if not AUTH.valid_login(email, password):
         abort(401)
     session_id = AUTH.create_session(email)
