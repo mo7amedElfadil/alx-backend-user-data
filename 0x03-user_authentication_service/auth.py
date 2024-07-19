@@ -12,12 +12,12 @@ from user import User
 
 def _hash_password(password: str) -> str:
     """ Returns a salted, hashed password """
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
 
 
 def _valid_password(password: str, hashed_password: str) -> bool:
     """ Check if password is valid """
-    return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
+    return bcrypt.checkpw(password.encode("utf-8"), hashed_password)
 
 
 def _generate_uuid() -> str:
@@ -85,7 +85,7 @@ class Auth:
         return user.reset_token
 
     def update_password(self, reset_token: str, password: str) -> None:
-        """ Reset user's password """
+        """ Reset user"s password """
         try:
             user = self._db.find_user_by(reset_token=reset_token)
         except NoResultFound:

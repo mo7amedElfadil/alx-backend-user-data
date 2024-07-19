@@ -47,6 +47,18 @@ class DB:
 
         return user
 
+    def _validate_attribs(self, kwargs: dict) -> None:
+        """ Validate attributes in kwargs
+            Args:
+                kwargs (dict): key word arguments
+            Raises:
+                ValueError - when invalid keys are passed
+       """
+        columns = User.__table__.columns.keys()
+        for key in kwargs.keys():
+            if key not in columns:
+                raise ValueError
+
     def find_user_by(self, **kwargs) -> User:
         """ Find user by key word arguments
             NoResultFound and InvalidRequestError are raised when
@@ -63,10 +75,20 @@ class DB:
             Returns:
                 User object
         """
-        return self._session\
+        try:
+            self._validate_attribs(kwargs)
+        except ValueError:
+            raise InvalidRequestError
+
+        user = self._session\
             .query(User)\
             .filter_by(**kwargs)\
             .one()
+
+        if not user:
+            raise NoResultFound
+
+        return user
 
     def update_user(self, user_id: int, **kwargs: Dict[str, str]):
         """ Update user
@@ -82,10 +104,8 @@ class DB:
         user = self.find_user_by(id=user_id)
         if not user:
             return
-
+        self._validate_attribs(kwargs)
         for key, value in kwargs.items():
-            if not hasattr(User, key):
-                raise ValueError
             setattr(user, key, value)
 
         self._session.commit()
